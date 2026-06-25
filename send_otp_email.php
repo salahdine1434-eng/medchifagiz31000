@@ -29,7 +29,7 @@ function sendOtpEmail($toEmail, $otp) {
         $mail->Username   = GMAIL_ADDRESS;
         $mail->Password   = GMAIL_APP_PASSWORD;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+        $mail->Port       = 465;
 
         $mail->setFrom(GMAIL_ADDRESS, 'MedChifaGiz');
         $mail->addAddress($toEmail);

@@ -5,7 +5,7 @@
 //    RESEND_API_KEY  → votre clé API Resend (re_xxxxx)
 // ═══════════════════════════════════════════════════════════════
 
-define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: '');
+define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: 're_N6SxMjRv_CwV9MWGeCWkEm4opkbxa2cuR');
 
 function sendOtpEmail(string $toEmail, string $otp): bool
 {

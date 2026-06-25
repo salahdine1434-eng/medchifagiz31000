@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: medchifagiz
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GMAIL_ADDRESS
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false

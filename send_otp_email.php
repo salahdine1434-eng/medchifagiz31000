@@ -7,7 +7,7 @@
 //    SENDER_NAME     → MedChifaGiz
 // ═══════════════════════════════════════════════════════════════
 
-define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: 're_N6SxMjRv_CwV9MWGeCWkEm4opkbxa2cuR');
+define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: 're_d8gnxYK9_Jv24tzoRW3VFi8oLSxqYXJRY');
 define('SENDER_EMAIL',   getenv('SENDER_EMAIL')   ?: 'onboarding@resend.dev');
 define('SENDER_NAME',    getenv('SENDER_NAME')    ?: 'MedChifaGiz');
 

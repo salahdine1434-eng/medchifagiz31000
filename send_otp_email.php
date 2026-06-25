@@ -1,110 +1,73 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require __DIR__ . '/PHPMailer/Exception.php';
-require __DIR__ . '/PHPMailer/PHPMailer.php';
-require __DIR__ . '/PHPMailer/SMTP.php';
-
 // ═══════════════════════════════════════════════════════════════
-//  ⚠️  IMPORTANT : ces valeurs viennent des variables d'environnement
-//  (GMAIL_ADDRESS / GMAIL_APP_PASSWORD), définies dans Render →
-//  Environment. Créez un mot de passe d'application Google sur :
-//     https://myaccount.google.com/apppasswords
+//  Envoi via API Resend (HTTPS port 443) — Compatible Render Free
+//  Variables Render → Environment :
+//    RESEND_API_KEY  → votre clé API Resend (re_xxxxx)
 // ═══════════════════════════════════════════════════════════════
-define('GMAIL_ADDRESS',      getenv('GMAIL_ADDRESS') ?: 'nadjetkheira631@gmail.com');
-define('GMAIL_APP_PASSWORD', getenv('GMAIL_APP_PASSWORD') ?: 'REMPLACER_PAR_NOUVEAU_MOT_DE_PASSE_APP');
 
-function sendOtpEmail($toEmail, $otp) {
+define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: '');
 
-    $mail = new PHPMailer(true);
-
-    try {
-        $mail->CharSet  = 'UTF-8';
-        $mail->Encoding = 'base64';
-
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = GMAIL_ADDRESS;
-        $mail->Password   = GMAIL_APP_PASSWORD;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 465;
-
-        $mail->setFrom(GMAIL_ADDRESS, 'MedChifaGiz');
-        $mail->addAddress($toEmail);
-
-        // ✅ BUG CORRIGÉ : même nom de fichier partout (medchifagz.png)
-        $logoPath = __DIR__ . '/medchifagz.png';
-        if (file_exists($logoPath)) {
-            $mail->addEmbeddedImage($logoPath, 'logo_med');
-        }
-
-        $mail->isHTML(true);
-        $mail->Subject = 'رمز التحقق - MedChifaGiz';
-
-        $mail->Body = "
-<div style='font-family:Tahoma, Arial, sans-serif; direction:rtl; line-height:1.8; color:#222; font-size:15px'>
-
-    <h2 style='color:#2e7d32; margin-bottom:10px'>
-        مرحباً بك في MedChifaGiz
-    </h2>
-
-    <p>نحن سعداء بانضمامك إلى منصتنا الصحية الذكية</p>
-    <p>رمز التحقق الخاص بك:</p>
-
-    <div style='
-        display:inline-block;
-        padding:12px 25px;
-        font-size:26px;
-        font-weight:bold;
-        color:#2e7d32;
-        background:#f1f8f4;
-        border:2px dashed #2e7d32;
-        border-radius:8px;
-        letter-spacing:3px;
-        margin:10px 0;
-    '>
-        $otp
-    </div>
-
-    <p>يرجى إدخال هذا الرمز لتفعيل حسابك.</p>
-    <hr style='margin:25px 0'>
-
-    <div style='direction:ltr; text-align:left; font-size:15px'>
-        <h3 style='color:#2e7d32'>Welcome to MedChifaGiz</h3>
-        <p>Your verification code is:</p>
-        <div style='
-            display:inline-block;
-            padding:10px 20px;
-            font-size:24px;
-            font-weight:bold;
-            color:#2e7d32;
-            background:#f1f8f4;
-            border:2px dashed #2e7d32;
-            border-radius:8px;
-            letter-spacing:3px;
-            margin:10px 0;
-        '>
-            $otp
-        </div>
-        <p>Please enter this code to activate your account.</p>
-    </div>
-
-    <hr style='margin:25px 0'>
-    <p style='font-size:13px; color:gray'>
-        إذا لم تقم بطلب هذا، يرجى تجاهل هذه الرسالة /
-        If you did not request this, please ignore this email.
-    </p>
-    <p>MedChifaGiz Team</p>
-</div>
-";
-
-        $mail->send();
-        return true;
-
-    } catch (Exception $e) {
-        error_log("Mailer Error: " . $mail->ErrorInfo);
+function sendOtpEmail(string $toEmail, string $otp): bool
+{
+    if (RESEND_API_KEY === '') {
+        error_log('[MedChifaGiz] RESEND_API_KEY non défini.');
         return false;
     }
+
+    $htmlBody = "
+<div style='font-family:Tahoma,Arial,sans-serif;direction:rtl;line-height:1.8;color:#222;font-size:15px'>
+    <h2 style='color:#2e7d32'>مرحباً بك في MedChifaGiz</h2>
+    <p>رمز التحقق الخاص بك:</p>
+    <div style='display:inline-block;padding:12px 25px;font-size:26px;font-weight:bold;color:#2e7d32;background:#f1f8f4;border:2px dashed #2e7d32;border-radius:8px;letter-spacing:3px;margin:10px 0'>
+        {$otp}
+    </div>
+    <p>يرجى إدخال هذا الرمز لتفعيل حسابك.</p>
+    <hr style='margin:25px 0'>
+    <div style='direction:ltr;text-align:left'>
+        <h3 style='color:#2e7d32'>Welcome to MedChifaGiz</h3>
+        <p>Your verification code is: <strong>{$otp}</strong></p>
+        <p>Please enter this code to activate your account.</p>
+    </div>
+    <hr style='margin:25px 0'>
+    <p style='font-size:13px;color:gray'>If you did not request this, please ignore this email.</p>
+    <p>MedChifaGiz Team</p>
+</div>";
+
+    // ⚠️ onboarding@resend.dev = adresse officielle Resend
+    // → envoie vers N'IMPORTE QUEL email sans domaine vérifié
+    $payload = json_encode([
+        'from'    => 'MedChifaGiz <onboarding@resend.dev>',
+        'to'      => [$toEmail],
+        'subject' => 'رمز التحقق - MedChifaGiz',
+        'html'    => $htmlBody,
+    ]);
+
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_TIMEOUT        => 15,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . RESEND_API_KEY,
+        ],
+    ]);
+
+    $response  = curl_exec($ch);
+    $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($curlError) {
+        error_log('[MedChifaGiz] Resend cURL error: ' . $curlError);
+        return false;
+    }
+
+    if ($httpCode !== 200 && $httpCode !== 201) {
+        error_log('[MedChifaGiz] Resend API error ' . $httpCode . ': ' . $response);
+        return false;
+    }
+
+    return true;
 }

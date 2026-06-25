@@ -36,7 +36,7 @@ function sendOtpEmail(string $toEmail, string $otp): bool
     // ⚠️ onboarding@resend.dev = adresse officielle Resend
     // → envoie vers N'IMPORTE QUEL email sans domaine vérifié
     $payload = json_encode([
-        'from'    => 'MedChifaGiz <consultation-aide-medical.ignorelist.com>',
+        'from'    => 'MedChifaGiz <41.100.168.200>',
         'to'      => [$toEmail],
         'subject' => 'رمز التحقق - MedChifaGiz',
         'html'    => $htmlBody,

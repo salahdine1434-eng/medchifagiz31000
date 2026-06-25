@@ -7,8 +7,8 @@
 //    SENDER_NAME     → MedChifaGiz
 // ═══════════════════════════════════════════════════════════════
 
-define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: 're_d8gnxYK9_Jv24tzoRW3VFi8oLSxqYXJRY');
-define('SENDER_EMAIL',   getenv('SENDER_EMAIL')   ?: 'anything>@eetolauark.resend.app');
+define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: 're_CmxdoHPM_2gJBbcQVmGAzLD81W7Q1u1vB');
+define('SENDER_EMAIL',   getenv('SENDER_EMAIL')   ?: 'onboarding@resend.dev');
 define('SENDER_NAME',    getenv('SENDER_NAME')    ?: 'MedChifaGiz');
 
 function sendOtpEmail(string $toEmail, string $otp): bool

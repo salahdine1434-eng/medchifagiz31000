@@ -8,7 +8,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: 're_N6SxMjRv_CwV9MWGeCWkEm4opkbxa2cuR');
-define('SENDER_EMAIL',   getenv('SENDER_EMAIL')   ?: '41.100.168.200');
+define('SENDER_EMAIL',   getenv('SENDER_EMAIL')   ?: 'onboarding@resend.dev');
 define('SENDER_NAME',    getenv('SENDER_NAME')    ?: 'MedChifaGiz');
 
 function sendOtpEmail(string $toEmail, string $otp): bool

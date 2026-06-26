@@ -1,16 +1,12 @@
 <?php
 // ═══════════════════════════════════════════════════════════════
-//  Envoi via API Brevo (HTTPS port 587)
+//  Envoi via API Resend (HTTPS port 443)
 //  Compatible Render Free Plan
 //  Variables Render → Environment :
-//    BREVO_API_KEY  → clé API Brevo
-//    SENDER_EMAIL   → adresse expéditrice vérifiée dans Brevo
-//    SENDER_NAME    → nom affiché (optionnel)
+//    RESEND_API_KEY → clé API Resend
 // ═══════════════════════════════════════════════════════════════
 
-define('BREVO_API_KEY', getenv('BREVO_API_KEY') ?: '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');
-define('SENDER_EMAIL',  getenv('SENDER_EMAIL')  ?: 'salahdine1434@gmail.com');
-define('SENDER_NAME',   getenv('SENDER_NAME')   ?: 'MedChifaGiz');
+define('RESEND_API_KEY', getenv('RESEND_API_KEY') ?: 're_UmtaieDt_FYkc7zW6t9vUFc52rfi2Fi4Y');
 
 function sendOtpEmail(string $toEmail, string $otp): bool
 {
@@ -34,13 +30,13 @@ function sendOtpEmail(string $toEmail, string $otp): bool
 </div>";
 
     $payload = json_encode([
-        'sender'      => ['name' => SENDER_NAME, 'email' => SENDER_EMAIL],
-        'to'          => [['email' => $toEmail]],
-        'subject'     => 'رمز التحقق - MedChifaGiz',
-        'htmlContent' => $htmlBody,
+        'from'    => 'MedChifaGiz <onboarding@resend.dev>',
+        'to'      => [$toEmail],
+        'subject' => 'رمز التحقق - MedChifaGiz',
+        'html'    => $htmlBody,
     ]);
 
-    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+    $ch = curl_init('https://api.resend.com/emails');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST           => true,
@@ -48,8 +44,7 @@ function sendOtpEmail(string $toEmail, string $otp): bool
         CURLOPT_TIMEOUT        => 15,
         CURLOPT_HTTPHEADER     => [
             'Content-Type: application/json',
-            'Accept: application/json',
-            'api-key: ' . BREVO_API_KEY,
+            'Authorization: Bearer ' . RESEND_API_KEY,
         ],
     ]);
 
@@ -59,12 +54,12 @@ function sendOtpEmail(string $toEmail, string $otp): bool
     curl_close($ch);
 
     if ($curlError) {
-        error_log('[MedChifaGiz] Brevo cURL error: ' . $curlError);
+        error_log('[MedChifaGiz] Resend cURL error: ' . $curlError);
         return false;
     }
 
-    if ($httpCode !== 201) {
-        error_log('[MedChifaGiz] Brevo API error ' . $httpCode . ': ' . $response);
+    if ($httpCode !== 200 && $httpCode !== 201) {
+        error_log('[MedChifaGiz] Resend API error ' . $httpCode . ': ' . $response);
         return false;
     }
 

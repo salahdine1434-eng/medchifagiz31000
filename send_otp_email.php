@@ -63,7 +63,7 @@ function sendOtpEmail(string $toEmail, string $otp): bool
         return false;
     }
 
-    if ($httpCode !== 200) {
+    if ($httpCode !== 201) {
         error_log('[MedChifaGiz] Brevo API error ' . $httpCode . ': ' . $response);
         return false;
     }

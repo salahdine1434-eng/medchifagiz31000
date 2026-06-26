@@ -20,7 +20,7 @@ require __DIR__ . '/PHPMailer/SMTP.php';
 
 define('ELASTIC_USER',     getenv('ELASTIC_USER')     ?: 'salahdine1434@gmail.com
 ');
-define('ELASTIC_PASSWORD', getenv('ELASTIC_PASSWORD') ?: 'B632C8F5B4AD1D4225761643FA09060E4B68');
+define('ELASTIC_PASSWORD', getenv('ELASTIC_PASSWORD') ?: '8BDF94E0834C76772D875545C86FE56A72C181F2F4253AF34F74652E4E6785DE99D8159F420275C3B5B12DA509A2CCFA');
 define('SENDER_EMAIL',     getenv('SENDER_EMAIL')     ?: 'salahdine1434@gmail.com
 ');
 define('SENDER_NAME',      getenv('SENDER_NAME')      ?: 'MedChifaGiz');

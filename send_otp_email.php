@@ -1,6 +1,6 @@
 <?php
 // ═══════════════════════════════════════════════════════════════
-//  Envoi via API Brevo (HTTPS port 443)
+//  Envoi via API Brevo (HTTPS port 587)
 //  Compatible Render Free Plan
 //  Variables Render → Environment :
 //    BREVO_API_KEY  → clé API Brevo
@@ -63,7 +63,7 @@ function sendOtpEmail(string $toEmail, string $otp): bool
         return false;
     }
 
-    if ($httpCode !== 201) {
+    if ($httpCode !== 200) {
         error_log('[MedChifaGiz] Brevo API error ' . $httpCode . ': ' . $response);
         return false;
     }

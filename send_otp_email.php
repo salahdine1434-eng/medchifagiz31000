@@ -8,7 +8,7 @@
 //    SENDER_NAME    → nom affiché (optionnel)
 // ═══════════════════════════════════════════════════════════════
 
-define('BREVO_API_KEY', getenv('BREVO_API_KEY') ?: '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');
+define('BREVO_API_KEY', getenv('BREVO_API_KEY') ?: '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');
 define('SENDER_EMAIL',  getenv('SENDER_EMAIL')  ?: 'salahdine1434@gmail.com');
 define('SENDER_NAME',   getenv('SENDER_NAME')   ?: 'MedChifaGiz');
 

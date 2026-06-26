@@ -10,7 +10,7 @@
 //  Clé API : app.elasticemail.com → Paramètres → API Keys → Créer
 // ═══════════════════════════════════════════════════════════════
 
-define('ELASTIC_API_KEY', getenv('ELASTIC_API_KEY') ?: 8BDF94E0834C76772D875545C86FE56A72C181F2F4253AF34F74652E4E6785DE99D8159F420275C3B5B12DA509A2CCFA'');
+define('ELASTIC_API_KEY', getenv('ELASTIC_API_KEY') ?: 'F1B6FEFFA5771F65668F17AAF96C0EF54A5806CDE0F174A26C16D083C3F9AD1D35BCCABF6054CBE37EB211337CDDFE19');
 define('SENDER_EMAIL',    getenv('SENDER_EMAIL')    ?: 'salahdine1434@gmail.com');
 define('SENDER_NAME',     getenv('SENDER_NAME')     ?: 'MedChifaGiz');
 

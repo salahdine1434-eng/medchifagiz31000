@@ -1,26 +1,19 @@
 <?php
 // ═══════════════════════════════════════════════════════════════
-//  Envoi via API HTTP Elastic Email (port 443 HTTPS)
+//  Envoi via API Brevo (HTTPS port 443)
 //  Compatible Render Free Plan
 //  Variables Render → Environment :
-//    ELASTIC_API_KEY  → votre clé API Elastic Email
-//    SENDER_EMAIL     → adresse expéditrice vérifiée
-//    SENDER_NAME      → nom affiché (optionnel)
-//
-//  Clé API : app.elasticemail.com → Paramètres → API Keys → Créer
+//    BREVO_API_KEY  → clé API Brevo
+//    SENDER_EMAIL   → adresse expéditrice vérifiée dans Brevo
+//    SENDER_NAME    → nom affiché (optionnel)
 // ═══════════════════════════════════════════════════════════════
 
-define('ELASTIC_API_KEY', getenv('ELASTIC_API_KEY') ?: 'F1B6FEFFA5771F65668F17AAF96C0EF54A5806CDE0F174A26C16D083C3F9AD1D35BCCABF6054CBE37EB211337CDDFE19');
-define('SENDER_EMAIL',    getenv('SENDER_EMAIL')    ?: 'salahdine1434@gmail.com');
-define('SENDER_NAME',     getenv('SENDER_NAME')     ?: 'MedChifaGiz');
+define('BREVO_API_KEY', getenv('BREVO_API_KEY') ?: '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');
+define('SENDER_EMAIL',  getenv('SENDER_EMAIL')  ?: 'salahdine1434@gmail.com');
+define('SENDER_NAME',   getenv('SENDER_NAME')   ?: 'MedChifaGiz');
 
 function sendOtpEmail(string $toEmail, string $otp): bool
 {
-    if (ELASTIC_API_KEY === '' || SENDER_EMAIL === '') {
-        error_log('[MedChifaGiz] ELASTIC_API_KEY ou SENDER_EMAIL non défini.');
-        return false;
-    }
-
     $htmlBody = "
 <div style='font-family:Tahoma,Arial,sans-serif;direction:rtl;line-height:1.8;color:#222;font-size:15px'>
     <h2 style='color:#2e7d32'>مرحباً بك في MedChifaGiz</h2>
@@ -40,24 +33,24 @@ function sendOtpEmail(string $toEmail, string $otp): bool
     <p>MedChifaGiz Team</p>
 </div>";
 
-    $payload = http_build_query([
-        'apikey'          => ELASTIC_API_KEY,
-        'to'              => $toEmail,
-        'from'            => SENDER_EMAIL,
-        'fromName'        => SENDER_NAME,
-        'subject'         => 'رمز التحقق - MedChifaGiz',
-        'bodyHtml'        => $htmlBody,
-        'bodyText'        => "رمز التحقق: {$otp}",
-        'isTransactional' => true,
+    $payload = json_encode([
+        'sender'      => ['name' => SENDER_NAME, 'email' => SENDER_EMAIL],
+        'to'          => [['email' => $toEmail]],
+        'subject'     => 'رمز التحقق - MedChifaGiz',
+        'htmlContent' => $htmlBody,
     ]);
 
-    $ch = curl_init('https://api.elasticemail.com/v2/email/send');
+    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST           => true,
         CURLOPT_POSTFIELDS     => $payload,
         CURLOPT_TIMEOUT        => 15,
-        CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'api-key: ' . BREVO_API_KEY,
+        ],
     ]);
 
     $response  = curl_exec($ch);
@@ -66,14 +59,12 @@ function sendOtpEmail(string $toEmail, string $otp): bool
     curl_close($ch);
 
     if ($curlError) {
-        error_log('[MedChifaGiz] Elastic Email cURL error: ' . $curlError);
+        error_log('[MedChifaGiz] Brevo cURL error: ' . $curlError);
         return false;
     }
 
-    $result = json_decode($response, true);
-
-    if ($httpCode !== 200 || !isset($result['success']) || $result['success'] !== true) {
-        error_log('[MedChifaGiz] Elastic Email error: ' . $response);
+    if ($httpCode !== 201) {
+        error_log('[MedChifaGiz] Brevo API error ' . $httpCode . ': ' . $response);
         return false;
     }
 
